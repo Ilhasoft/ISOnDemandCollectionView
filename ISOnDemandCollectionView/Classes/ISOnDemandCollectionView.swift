@@ -116,7 +116,9 @@ extension ISOnDemandCollectionView: UICollectionViewDataSource, UICollectionView
     }
     
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        onDemandDelegate?.onDemandCollectionView?(self, didSelectItemAt: indexPath)
+        if let cell = cellForItem(at: indexPath) as? ISOnDemandCollectionViewCell {
+            onDemandDelegate?.onDemandCollectionView?(self, didSelect: cell, at: indexPath)
+        }
     }
     
     public func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, at indexPath: IndexPath) {
@@ -197,7 +199,7 @@ extension ISOnDemandCollectionView: ISOnDemandCollectionViewInteractorDelegate {
     @objc optional func onDemandCollectionView(_ collectionView: ISOnDemandCollectionView, scrollViewDidScroll: UIScrollView)
     @objc optional func onDemandWasPulled(toRefresh: ISOnDemandCollectionView)
     @objc optional func onDemandCollectionView(_ collectionView: ISOnDemandCollectionView, setup cell: ISOnDemandCollectionViewCell, at indexPath: IndexPath)
-    @objc optional func onDemandCollectionView(_ collectionView: ISOnDemandCollectionView, didSelectItemAt indexPath: IndexPath)
+    @objc optional func onDemandCollectionView(_ collectionView: ISOnDemandCollectionView, didSelect cell: ISOnDemandCollectionViewCell, at indexPath: IndexPath)
     @objc optional func onDemandCollectionView(_ collectionView: ISOnDemandCollectionView, willDisplayCell: ISOnDemandCollectionViewCell, at indexPath: IndexPath)
     @objc optional func onDemandCollectionView(_ collectionView: ISOnDemandCollectionView, didEndDisplaying: ISOnDemandCollectionViewCell, at indexPath: IndexPath)
     @objc optional func onDemandCollectionView(_ collectionView: ISOnDemandCollectionView, sizeForItemAt indexPath: IndexPath) -> CGSize

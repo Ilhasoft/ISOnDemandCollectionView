@@ -141,6 +141,16 @@ extension ISOnDemandCollectionView: UICollectionViewDataSource, UICollectionView
         return size
     }
     
+    public func collectionView(_ collectionView: UICollectionView, collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        let spacing: CGFloat! = onDemandDelegate?.onDemandCollectionView?(self, collectionViewLayout: collectionViewLayout, minimumLineSpacingForSectionAt: section)
+        return spacing
+    }
+    
+    public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        let inset = onDemandDelegate?.onDemandCollectionView?(self, collectionViewLayout: collectionViewLayout, insetForSectionAt: section) ?? UIEdgeInsetsMake(0, 0, 0, 0)
+        return inset
+    }
+    
     //MARK: Scroll methods
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
         onDemandDelegate?.onDemandCollectionView?(self, scrollViewDidScroll: scrollView)
@@ -184,6 +194,10 @@ extension ISOnDemandCollectionView: ISOnDemandCollectionViewInteractorDelegate {
             insertItems(at: indexes)
         }
     }
+    
+    func reloadCollectionView() {
+        self.reloadData()
+    }
 }
 
 //MARK: - Protocols
@@ -203,5 +217,7 @@ extension ISOnDemandCollectionView: ISOnDemandCollectionViewInteractorDelegate {
     @objc optional func onDemandCollectionView(_ collectionView: ISOnDemandCollectionView, willDisplayCell: ISOnDemandCollectionViewCell, at indexPath: IndexPath)
     @objc optional func onDemandCollectionView(_ collectionView: ISOnDemandCollectionView, didEndDisplaying: ISOnDemandCollectionViewCell, at indexPath: IndexPath)
     @objc optional func onDemandCollectionView(_ collectionView: ISOnDemandCollectionView, sizeForItemAt indexPath: IndexPath) -> CGSize
+    @objc optional func onDemandCollectionView(_ collectionView: ISOnDemandCollectionView, collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat
+    @objc optional func onDemandCollectionView(_ collectionView: ISOnDemandCollectionView, collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets
     
 }

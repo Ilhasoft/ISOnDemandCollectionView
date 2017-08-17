@@ -10,6 +10,7 @@ import Foundation
 
 protocol ISOnDemandCollectionViewInteractorDelegate {
     func onObjectsFetched(lastObjects: [Any]?, error: Error?)
+    func reloadCollectionView()
 }
 
 open class ISOnDemandCollectionViewInteractor: AnyObject {
@@ -51,6 +52,8 @@ open class ISOnDemandCollectionViewInteractor: AnyObject {
         
         currentPage = 0
         hasMoreItems = true
+        objects = []
+        delegate?.reloadCollectionView()
         fetchObjects(forPage: currentPage) {
             objects, error in
             let newObjects = objects ?? []

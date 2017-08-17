@@ -1,6 +1,0 @@
-framework module Pods_ISOnDemandCollectionView_Example {
-  umbrella header "Pods-ISOnDemandCollectionView_Example-umbrella.h"
-
-  export *
-  module * { export * }
-}

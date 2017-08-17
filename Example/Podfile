@@ -1,0 +1,11 @@
+use_frameworks!
+
+target 'ISOnDemandCollectionView_Example' do
+  pod 'ISOnDemandCollectionView', :path => '../'
+
+  target 'ISOnDemandCollectionView_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end

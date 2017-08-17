@@ -1,0 +1,10 @@
+framework module ISOnDemandCollectionView {
+  umbrella header "ISOnDemandCollectionView-umbrella.h"
+
+  export *
+  module * { export * }
+}
+
+module ISOnDemandCollectionView.__Swift {
+    exclude header "ISOnDemandCollectionView-Swift.h"
+}

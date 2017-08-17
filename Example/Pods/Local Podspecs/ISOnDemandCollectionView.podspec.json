@@ -1,0 +1,22 @@
+{
+  "name": "ISOnDemandCollectionView",
+  "version": "0.1.0",
+  "summary": "A short description of ISOnDemandCollectionView.",
+  "description": "TODO: Add long description of the pod here.",
+  "homepage": "https://github.com/yvesbastos/ISOnDemandCollectionView",
+  "license": {
+    "type": "MIT",
+    "file": "LICENSE"
+  },
+  "authors": {
+    "yvesbastos": "raphael.bastos@me.com"
+  },
+  "source": {
+    "git": "https://github.com/yvesbastos/ISOnDemandCollectionView.git",
+    "tag": "0.1.0"
+  },
+  "platforms": {
+    "ios": "10.0"
+  },
+  "source_files": "ISOnDemandCollectionView/Classes/**/*"
+}

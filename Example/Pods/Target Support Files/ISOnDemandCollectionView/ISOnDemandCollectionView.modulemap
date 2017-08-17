@@ -1,0 +1,6 @@
+framework module ISOnDemandCollectionView {
+  umbrella header "ISOnDemandCollectionView-umbrella.h"
+
+  export *
+  module * { export * }
+}

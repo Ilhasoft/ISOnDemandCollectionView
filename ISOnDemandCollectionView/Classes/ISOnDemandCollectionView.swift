@@ -17,7 +17,7 @@ public class ISOnDemandCollectionView: UICollectionView {
         }
     }
     fileprivate var showSpinnerFooter = false
-    
+    fileprivate var firstLoad = true
     //MARK: Init
     required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -77,7 +77,7 @@ public class ISOnDemandCollectionView: UICollectionView {
     }
 }
 
-extension ISOnDemandCollectionView: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
+extension ISOnDemandCollectionView: UICollectionViewDataSource, UICollectionViewDelegate {
     public func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 2
     }
@@ -133,23 +133,23 @@ extension ISOnDemandCollectionView: UICollectionViewDataSource, UICollectionView
         }
     }
     
-    public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        var size: CGSize! = onDemandDelegate?.onDemandCollectionView?(self, sizeForItemAt: indexPath)
-        if size == nil {
-            size = UICollectionViewFlowLayoutAutomaticSize
-        }
-        return size
-    }
-    
-    public func collectionView(_ collectionView: UICollectionView, collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        let spacing: CGFloat! = onDemandDelegate?.onDemandCollectionView?(self, collectionViewLayout: collectionViewLayout, minimumLineSpacingForSectionAt: section)
-        return spacing
-    }
-    
-    public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        let inset = onDemandDelegate?.onDemandCollectionView?(self, collectionViewLayout: collectionViewLayout, insetForSectionAt: section) ?? UIEdgeInsetsMake(0, 0, 0, 0)
-        return inset
-    }
+//    public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+//        var size: CGSize! = onDemandDelegate?.onDemandCollectionView?(self, sizeForItemAt: indexPath)
+//        if size == nil {
+//            size = UICollectionViewFlowLayoutAutomaticSize
+//        }
+//        return size
+//    }
+//    
+//    public func collectionView(_ collectionView: UICollectionView, collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+//        let spacing: CGFloat! = onDemandDelegate?.onDemandCollectionView?(self, collectionViewLayout: collectionViewLayout, minimumLineSpacingForSectionAt: section)
+//        return spacing
+//    }
+//    
+//    public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+//        let inset = onDemandDelegate?.onDemandCollectionView?(self, collectionViewLayout: collectionViewLayout, insetForSectionAt: section) ?? UIEdgeInsetsMake(0, 0, 0, 0)
+//        return inset
+//    }
     
     //MARK: Scroll methods
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -160,10 +160,16 @@ extension ISOnDemandCollectionView: UICollectionViewDataSource, UICollectionView
         if !decelerate {
             onScrollFinish()
         }
+        onDemandDelegate?.onDemandCollectionView?(self, scrollViewDidEndDragging: scrollView, willDecelerate: decelerate)
+    }
+    
+    public func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
+        onDemandDelegate?.onDemandCollectionView?(self, scrollViewDidEndScrollingAnimation: scrollView)
     }
     
     public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         onScrollFinish()
+        onDemandDelegate?.onDemandCollectionView?(self, scrollViewDidEndDecelerating: scrollView)
     }
     
     private func onScrollFinish() {
@@ -182,16 +188,23 @@ extension ISOnDemandCollectionView: ISOnDemandCollectionViewInteractorDelegate {
             refreshControl?.endRefreshing()
         }
         setFooterSpinner(to: false)
-        onDemandDelegate?.onDemandCollectionView(self, onContentLoadFinishedWithError: error)
-        if error == nil && lastObjects?.count ?? 0 > 0 {
+        let lastObjectsCount = lastObjects?.count ?? 0
+        if error == nil && lastObjectsCount > 0 {
             let lastObjectsRowDelta = Array(0..<lastObjects!.count)
             var indexes = [IndexPath]()
-            let initialRow = numberOfItems(inSection: 0)
+            let initialRow = numberOfItems(inSection: 0) //- lastObjectsCount
             lastObjectsRowDelta.forEach {
                 rowDelta in
                 indexes.append(IndexPath(row: initialRow+rowDelta, section: 0))
             }
-            insertItems(at: indexes)
+            
+            if firstLoad {
+                firstLoad = false
+                reloadCollectionView()
+            } else if indexes.count > 0 {
+                insertItems(at: indexes)
+            }
+            onDemandDelegate?.onDemandCollectionView(self, onContentLoadFinishedWithError: error)
         }
     }
     
@@ -210,14 +223,19 @@ extension ISOnDemandCollectionView: ISOnDemandCollectionViewInteractorDelegate {
     @objc func onDemandCollectionView(_ collectionView: ISOnDemandCollectionView, reuseIdentifierForItemAt indexPath: IndexPath) -> String
     @objc func onDemandCollectionView(_ collectionView: ISOnDemandCollectionView, onContentLoadFinishedWithError error: Error?)
     
-    @objc optional func onDemandCollectionView(_ collectionView: ISOnDemandCollectionView, scrollViewDidScroll: UIScrollView)
     @objc optional func onDemandWasPulled(toRefresh: ISOnDemandCollectionView)
     @objc optional func onDemandCollectionView(_ collectionView: ISOnDemandCollectionView, setup cell: ISOnDemandCollectionViewCell, at indexPath: IndexPath)
     @objc optional func onDemandCollectionView(_ collectionView: ISOnDemandCollectionView, didSelect cell: ISOnDemandCollectionViewCell, at indexPath: IndexPath)
     @objc optional func onDemandCollectionView(_ collectionView: ISOnDemandCollectionView, willDisplayCell: ISOnDemandCollectionViewCell, at indexPath: IndexPath)
     @objc optional func onDemandCollectionView(_ collectionView: ISOnDemandCollectionView, didEndDisplaying: ISOnDemandCollectionViewCell, at indexPath: IndexPath)
-    @objc optional func onDemandCollectionView(_ collectionView: ISOnDemandCollectionView, sizeForItemAt indexPath: IndexPath) -> CGSize
-    @objc optional func onDemandCollectionView(_ collectionView: ISOnDemandCollectionView, collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat
-    @objc optional func onDemandCollectionView(_ collectionView: ISOnDemandCollectionView, collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets
+    @objc optional func onDemandCollectionView(_ collectionView: ISOnDemandCollectionView, scrollViewDidEndDecelerating scrollView: UIScrollView)
+    @objc optional func onDemandCollectionView(_ collectionView: ISOnDemandCollectionView, scrollViewDidEndDragging scrollView: UIScrollView, willDecelerate decelerate: Bool)
+    @objc optional func onDemandCollectionView(_ collectionView: ISOnDemandCollectionView, scrollViewDidScroll scrollView: UIScrollView)
+    @objc optional func onDemandCollectionView(_ collectionView: ISOnDemandCollectionView, scrollViewDidEndScrollingAnimation scrollView: UIScrollView)
+
+    
+    //    @objc optional func onDemandCollectionView(_ collectionView: ISOnDemandCollectionView, sizeForItemAt indexPath: IndexPath) -> CGSize
+//    @objc optional func onDemandCollectionView(_ collectionView: ISOnDemandCollectionView, collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat
+//    @objc optional func onDemandCollectionView(_ collectionView: ISOnDemandCollectionView, collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets
     
 }

@@ -32,6 +32,11 @@ open class ISOnDemandCollectionViewInteractor: AnyObject {
         guard !isFetching && hasMoreItems else {
             let message = isFetching ? "Still fetching items, wait..." : "All items were already fetched"
             NSLog(message)
+            
+            if isFetching {
+                isFetching = false
+                self.delegate?.onObjectsFetched(lastObjects: [], error: nil)
+            }
             return
         }
         isFetching = true 
@@ -76,7 +81,7 @@ open class ISOnDemandCollectionViewInteractor: AnyObject {
     //MARK: Util
     fileprivate func onObjectsLoaded(lastObjectsCount: Int) {
         isFetching = false
-        hasMoreItems = lastObjectsCount >= pagination
+        hasMoreItems = lastObjectsCount > pagination
         
         if hasMoreItems {
             currentPage += 1

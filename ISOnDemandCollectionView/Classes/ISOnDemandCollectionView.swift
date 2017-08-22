@@ -16,7 +16,6 @@ public class ISOnDemandCollectionView: UICollectionView {
             interactor?.delegate = self
         }
     }
-    fileprivate var showSpinnerFooter = false
     fileprivate var firstLoad = true
     //MARK: Init
     required public init?(coder aDecoder: NSCoder) {
@@ -51,9 +50,8 @@ public class ISOnDemandCollectionView: UICollectionView {
             fatalError("You must set both ISOnDemandColectionViewDelegate and ISOnDemandCollectionViewInteractor before calling loadContent")
         }
         if !(refreshControl?.isRefreshing ?? false) && supplementaryView(forElementKind: UICollectionElementKindSectionFooter, at: []) == nil {
+            onDemandDelegate?.onDemandWillStartLoading?(self)
             interactor.loadItems()
-            
-            setFooterSpinner(to: true)//interactor.hasMoreItems)
         }
     }
     
@@ -62,19 +60,6 @@ public class ISOnDemandCollectionView: UICollectionView {
      */
     public func refresh() {
         interactor.refreshAllContent()
-    }
-    
-    //MARK: Util
-    func setFooterSpinner(to show: Bool) {
-        showSpinnerFooter = show
-        let refreshControlIsActive = refreshControl?.isRefreshing ?? false
-        let itemsCountInSectionOne = numberOfItems(inSection: 1)
-        let indexPath = IndexPath(row: 0, section: 1)
-        if showSpinnerFooter && !refreshControlIsActive && itemsCountInSectionOne  == 0 {
-            insertItems(at: [indexPath])
-        } else if !showSpinnerFooter && itemsCountInSectionOne == 1 {
-            deleteItems(at: [indexPath])
-        }
     }
 }
 
@@ -88,7 +73,7 @@ extension ISOnDemandCollectionView: UICollectionViewDataSource, UICollectionView
         if section == 0 {
             count = interactor?.objects.count ?? 0
         } else {
-            count = showSpinnerFooter ? 1 : 0
+            count = 0
         }
         return count
     }
@@ -210,7 +195,6 @@ extension ISOnDemandCollectionView: ISOnDemandCollectionViewInteractorDelegate {
             }
             onDemandDelegate?.onDemandCollectionView(self, onContentLoadFinishedWithNewObjects: lastObjects, error: error)
         }
-        setFooterSpinner(to: false)
     }
     
     func reloadCollectionView() {
@@ -229,6 +213,7 @@ extension ISOnDemandCollectionView: ISOnDemandCollectionViewInteractorDelegate {
     @objc func onDemandCollectionView(_ collectionView: ISOnDemandCollectionView, onContentLoadFinishedWithNewObjects objects: [Any]?, error: Error?)
     
     @objc optional func onDemandWasPulled(toRefresh: ISOnDemandCollectionView)
+    @objc optional func onDemandWillStartLoading(_ collectionView: ISOnDemandCollectionView)
     @objc optional func onDemandCollectionView(_ collectionView: ISOnDemandCollectionView, setup cell: ISOnDemandCollectionViewCell, at indexPath: IndexPath)
     @objc optional func onDemandCollectionView(_ collectionView: ISOnDemandCollectionView, didSelect cell: ISOnDemandCollectionViewCell, at indexPath: IndexPath)
     @objc optional func onDemandCollectionView(_ collectionView: ISOnDemandCollectionView, willDisplayCell: ISOnDemandCollectionViewCell, at indexPath: IndexPath)

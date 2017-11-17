@@ -35,10 +35,15 @@ public class ISOnDemandCollectionView: UICollectionView {
         }
         dataSource = self
         delegate = self
+        
         register(UINib(nibName: "ISOnDemandCollectionLoadingCell", bundle: Bundle(for: ISOnDemandCollectionLoadingCell.self)), forCellWithReuseIdentifier: "ISOnDemandCollectionLoadingCell")
     }
     
     //MARK: Class Methods
+    public func setLayout(to layout: UICollectionViewFlowLayout) {
+        collectionViewLayout = layout
+    }
+    
     @objc fileprivate func onPullToRefresh() {
         onDemandDelegate?.onDemandWasPulled?(toRefresh: self)
         interactor?.refreshAllContent()

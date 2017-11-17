@@ -29,10 +29,6 @@ public class ISOnDemandCollectionView: UICollectionView {
     }
     
     fileprivate func initialize() {
-        if #available(iOS 10.0, *) {
-            refreshControl = UIRefreshControl()
-            refreshControl?.addTarget(self, action: #selector(onPullToRefresh), for: .valueChanged)
-        }
         dataSource = self
         delegate = self
         
@@ -42,11 +38,6 @@ public class ISOnDemandCollectionView: UICollectionView {
     //MARK: Class Methods
     public func setLayout(to layout: UICollectionViewFlowLayout) {
         collectionViewLayout = layout
-    }
-    
-    @objc fileprivate func onPullToRefresh() {
-        onDemandDelegate?.onDemandWasPulled?(toRefresh: self)
-        interactor?.refreshAllContent()
     }
     
     /**
@@ -226,7 +217,6 @@ extension ISOnDemandCollectionView: ISOnDemandCollectionViewInteractorDelegate {
     @objc func onDemandCollectionView(_ collectionView: ISOnDemandCollectionView, reuseIdentifierForItemAt indexPath: IndexPath) -> String
     @objc func onDemandCollectionView(_ collectionView: ISOnDemandCollectionView, onContentLoadFinishedWithNewObjects objects: [Any]?, error: Error?)
     
-    @objc optional func onDemandWasPulled(toRefresh: ISOnDemandCollectionView)
     @objc optional func onDemandWillStartLoading(_ collectionView: ISOnDemandCollectionView)
     @objc optional func onDemandCollectionView(_ collectionView: ISOnDemandCollectionView, setup cell: ISOnDemandCollectionViewCell, at indexPath: IndexPath)
     @objc optional func onDemandCollectionView(_ collectionView: ISOnDemandCollectionView, didSelect cell: ISOnDemandCollectionViewCell, at indexPath: IndexPath)

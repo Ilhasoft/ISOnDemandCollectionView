@@ -71,7 +71,7 @@ extension ISOnDemandCollectionView: UICollectionViewDataSource, UICollectionView
         if section == 0 {
             count = interactor?.objects.count ?? 0
         } else {
-            count = 0
+            count = 1
         }
         return count
     }

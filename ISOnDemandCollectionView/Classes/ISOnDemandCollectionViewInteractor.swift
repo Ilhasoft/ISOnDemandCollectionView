@@ -32,13 +32,8 @@ open class ISOnDemandCollectionViewInteractor {
         guard !isFetching && hasMoreItems else {
             let message = isFetching ? "Still fetching items, wait..." : "All items were already fetched"
             NSLog(message)
-            
-            if isFetching {
-                isFetching = false
-                self.delegate?.onObjectsFetched(lastObjects: [], error: nil)
-            }
-            return
         }
+        
         isFetching = true 
         fetchObjects(forPage: currentPage) {
             lastObjects, error in

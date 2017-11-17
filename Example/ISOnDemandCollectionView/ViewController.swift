@@ -35,7 +35,7 @@ extension ViewController: ISOnDemandCollectionViewDelegate {
         return collectionView.frame.size
     }
     
-    func onDemandCollectionView(_ collectionView: ISOnDemandCollectionView, onContentLoadFinishedWithError error: Error?) {
+    func onDemandCollectionView(_ collectionView: ISOnDemandCollectionView, onContentLoadFinishedWithNewObjects objects: [Any]?, error: Error?) {
         print(error ?? "No error")
     }
 }

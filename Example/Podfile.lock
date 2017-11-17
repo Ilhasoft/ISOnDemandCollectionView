@@ -9,7 +9,7 @@ EXTERNAL SOURCES:
     :path: ../
 
 SPEC CHECKSUMS:
-  ISOnDemandCollectionView: f40625c6b5280241e34b1ed5990bb1f969d7cfe4
+  ISOnDemandCollectionView: 42e8b9a8d89d3b43bbcad6b73e0c7bc63f66e6cb
 
 PODFILE CHECKSUM: 8a9fda9ca0f5c4f5cfd161fd441077c42472f3ec
 

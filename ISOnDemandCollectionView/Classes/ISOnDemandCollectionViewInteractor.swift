@@ -13,7 +13,7 @@ protocol ISOnDemandCollectionViewInteractorDelegate {
     func reloadCollectionView()
 }
 
-open class ISOnDemandCollectionViewInteractor: AnyObject {
+open class ISOnDemandCollectionViewInteractor {
     var delegate: ISOnDemandCollectionViewInteractorDelegate?
     public var objects = [Any]()
     public var pagination: Int = 0
@@ -81,10 +81,7 @@ open class ISOnDemandCollectionViewInteractor: AnyObject {
     //MARK: Util
     fileprivate func onObjectsLoaded(lastObjectsCount: Int) {
         isFetching = false
-        hasMoreItems = lastObjectsCount > pagination
-        
-        if hasMoreItems {
-            currentPage += 1
-        }
+        hasMoreItems = lastObjectsCount >= pagination
+        currentPage += 1
     }
 }

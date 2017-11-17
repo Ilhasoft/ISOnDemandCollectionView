@@ -29,8 +29,10 @@ public class ISOnDemandCollectionView: UICollectionView {
     }
     
     fileprivate func initialize() {
-        refreshControl = UIRefreshControl()
-        refreshControl?.addTarget(self, action: #selector(onPullToRefresh), for: .valueChanged)
+        if #available(iOS 10.0, *) {
+            refreshControl = UIRefreshControl()
+            refreshControl?.addTarget(self, action: #selector(onPullToRefresh), for: .valueChanged)
+        }
         dataSource = self
         delegate = self
         register(UINib(nibName: "ISOnDemandCollectionLoadingCell", bundle: Bundle(for: ISOnDemandCollectionLoadingCell.self)), forCellWithReuseIdentifier: "ISOnDemandCollectionLoadingCell")
@@ -49,7 +51,7 @@ public class ISOnDemandCollectionView: UICollectionView {
         guard let _ = onDemandDelegate, let interactor = interactor else {
             fatalError("You must set both ISOnDemandColectionViewDelegate and ISOnDemandCollectionViewInteractor before calling loadContent")
         }
-        if !(refreshControl?.isRefreshing ?? false) && supplementaryView(forElementKind: UICollectionElementKindSectionFooter, at: []) == nil {
+        if !interactor.isFetching {
             onDemandDelegate?.onDemandWillStartLoading?(self)
             interactor.loadItems()
         }
@@ -122,7 +124,11 @@ extension ISOnDemandCollectionView: UICollectionViewDataSource, UICollectionView
     public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         var size: CGSize! = onDemandDelegate?.onDemandCollectionView?(self, sizeForItemAt: indexPath)
         if size == nil {
-            size = UICollectionViewFlowLayoutAutomaticSize
+            if #available(iOS 10.0, *) {
+                size = UICollectionViewFlowLayoutAutomaticSize
+            } else {
+                size = CGSize(width: 50, height: 50)
+            }
         }
         return size
     }
@@ -174,9 +180,12 @@ extension ISOnDemandCollectionView: UICollectionViewDataSource, UICollectionView
 
 extension ISOnDemandCollectionView: ISOnDemandCollectionViewInteractorDelegate {
     func onObjectsFetched(lastObjects: [Any]?, error: Error?) {
-        if refreshControl?.isRefreshing ?? false {
-            refreshControl?.endRefreshing()
+        if #available(iOS 10.0, *) {
+            if refreshControl?.isRefreshing ?? false {
+                refreshControl?.endRefreshing()
+            }
         }
+        
         let lastObjectsCount = lastObjects?.count ?? 0
         if error == nil && lastObjectsCount > 0 {
             let lastObjectsRowDelta = Array(0..<lastObjects!.count)

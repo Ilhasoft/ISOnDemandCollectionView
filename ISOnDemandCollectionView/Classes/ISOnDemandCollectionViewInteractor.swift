@@ -32,6 +32,7 @@ open class ISOnDemandCollectionViewInteractor {
         guard !isFetching && hasMoreItems else {
             let message = isFetching ? "Still fetching items, wait..." : "All items were already fetched"
             NSLog(message)
+            return
         }
         
         isFetching = true 

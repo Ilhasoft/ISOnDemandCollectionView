@@ -35,7 +35,8 @@ open class ISOnDemandCollectionViewInteractor {
             return
         }
         
-        isFetching = true 
+        isFetching = true
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "setLoadingActivityView:"), object: true)
         fetchObjects(forPage: currentPage) {
             lastObjects, error in
             let lastObjects = lastObjects ?? []
@@ -51,8 +52,10 @@ open class ISOnDemandCollectionViewInteractor {
             return
         }
         
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "setLoadingActivityView:"), object: true)
         currentPage = 0
         hasMoreItems = true
+        isFetching = true
         objects = []
         delegate?.reloadCollectionView()
         fetchObjects(forPage: currentPage) {
@@ -76,6 +79,7 @@ open class ISOnDemandCollectionViewInteractor {
     
     //MARK: Util
     fileprivate func onObjectsLoaded(lastObjectsCount: Int) {
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "setLoadingActivityView:"), object: false)
         isFetching = false
         hasMoreItems = lastObjectsCount >= pagination
         currentPage += 1

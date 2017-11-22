@@ -29,17 +29,15 @@ public class ISOnDemandCollectionView: UICollectionView {
     }
     
     fileprivate func initialize() {
-        refreshControl = UIRefreshControl()
-        refreshControl?.addTarget(self, action: #selector(onPullToRefresh), for: .valueChanged)
         dataSource = self
         delegate = self
+        
         register(UINib(nibName: "ISOnDemandCollectionLoadingCell", bundle: Bundle(for: ISOnDemandCollectionLoadingCell.self)), forCellWithReuseIdentifier: "ISOnDemandCollectionLoadingCell")
     }
     
     //MARK: Class Methods
-    @objc fileprivate func onPullToRefresh() {
-        onDemandDelegate?.onDemandWasPulled?(toRefresh: self)
-        interactor?.refreshAllContent()
+    public func setLayout(to layout: UICollectionViewFlowLayout) {
+        collectionViewLayout = layout
     }
     
     /**
@@ -49,7 +47,7 @@ public class ISOnDemandCollectionView: UICollectionView {
         guard let _ = onDemandDelegate, let interactor = interactor else {
             fatalError("You must set both ISOnDemandColectionViewDelegate and ISOnDemandCollectionViewInteractor before calling loadContent")
         }
-        if !(refreshControl?.isRefreshing ?? false) && supplementaryView(forElementKind: UICollectionElementKindSectionFooter, at: []) == nil {
+        if !interactor.isFetching {
             onDemandDelegate?.onDemandWillStartLoading?(self)
             interactor.loadItems()
         }
@@ -73,7 +71,7 @@ extension ISOnDemandCollectionView: UICollectionViewDataSource, UICollectionView
         if section == 0 {
             count = interactor?.objects.count ?? 0
         } else {
-            count = 0
+            count = 1
         }
         return count
     }
@@ -122,7 +120,11 @@ extension ISOnDemandCollectionView: UICollectionViewDataSource, UICollectionView
     public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         var size: CGSize! = onDemandDelegate?.onDemandCollectionView?(self, sizeForItemAt: indexPath)
         if size == nil {
-            size = UICollectionViewFlowLayoutAutomaticSize
+            if #available(iOS 10.0, *) {
+                size = UICollectionViewFlowLayoutAutomaticSize
+            } else {
+                size = CGSize(width: 50, height: 50)
+            }
         }
         return size
     }
@@ -174,9 +176,12 @@ extension ISOnDemandCollectionView: UICollectionViewDataSource, UICollectionView
 
 extension ISOnDemandCollectionView: ISOnDemandCollectionViewInteractorDelegate {
     func onObjectsFetched(lastObjects: [Any]?, error: Error?) {
-        if refreshControl?.isRefreshing ?? false {
-            refreshControl?.endRefreshing()
+        if #available(iOS 10.0, *) {
+            if refreshControl?.isRefreshing ?? false {
+                refreshControl?.endRefreshing()
+            }
         }
+        
         let lastObjectsCount = lastObjects?.count ?? 0
         if error == nil && lastObjectsCount > 0 {
             let lastObjectsRowDelta = Array(0..<lastObjects!.count)
@@ -212,7 +217,6 @@ extension ISOnDemandCollectionView: ISOnDemandCollectionViewInteractorDelegate {
     @objc func onDemandCollectionView(_ collectionView: ISOnDemandCollectionView, reuseIdentifierForItemAt indexPath: IndexPath) -> String
     @objc func onDemandCollectionView(_ collectionView: ISOnDemandCollectionView, onContentLoadFinishedWithNewObjects objects: [Any]?, error: Error?)
     
-    @objc optional func onDemandWasPulled(toRefresh: ISOnDemandCollectionView)
     @objc optional func onDemandWillStartLoading(_ collectionView: ISOnDemandCollectionView)
     @objc optional func onDemandCollectionView(_ collectionView: ISOnDemandCollectionView, setup cell: ISOnDemandCollectionViewCell, at indexPath: IndexPath)
     @objc optional func onDemandCollectionView(_ collectionView: ISOnDemandCollectionView, didSelect cell: ISOnDemandCollectionViewCell, at indexPath: IndexPath)

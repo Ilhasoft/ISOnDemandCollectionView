@@ -13,7 +13,7 @@ protocol ISOnDemandCollectionViewInteractorDelegate {
     func reloadCollectionView()
 }
 
-open class ISOnDemandCollectionViewInteractor: AnyObject {
+open class ISOnDemandCollectionViewInteractor {
     var delegate: ISOnDemandCollectionViewInteractorDelegate?
     public var objects = [Any]()
     public var pagination: Int = 0
@@ -32,14 +32,11 @@ open class ISOnDemandCollectionViewInteractor: AnyObject {
         guard !isFetching && hasMoreItems else {
             let message = isFetching ? "Still fetching items, wait..." : "All items were already fetched"
             NSLog(message)
-            
-            if isFetching {
-                isFetching = false
-                self.delegate?.onObjectsFetched(lastObjects: [], error: nil)
-            }
             return
         }
-        isFetching = true 
+        
+        isFetching = true
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "setLoadingActivityView:"), object: true)
         fetchObjects(forPage: currentPage) {
             lastObjects, error in
             let lastObjects = lastObjects ?? []
@@ -55,8 +52,10 @@ open class ISOnDemandCollectionViewInteractor: AnyObject {
             return
         }
         
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "setLoadingActivityView:"), object: true)
         currentPage = 0
         hasMoreItems = true
+        isFetching = true
         objects = []
         delegate?.reloadCollectionView()
         fetchObjects(forPage: currentPage) {
@@ -80,11 +79,9 @@ open class ISOnDemandCollectionViewInteractor: AnyObject {
     
     //MARK: Util
     fileprivate func onObjectsLoaded(lastObjectsCount: Int) {
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "setLoadingActivityView:"), object: false)
         isFetching = false
-        hasMoreItems = lastObjectsCount > pagination
-        
-        if hasMoreItems {
-            currentPage += 1
-        }
+        hasMoreItems = lastObjectsCount >= pagination
+        currentPage += 1
     }
 }

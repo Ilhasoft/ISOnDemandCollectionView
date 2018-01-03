@@ -198,8 +198,8 @@ extension ISOnDemandCollectionView: ISOnDemandCollectionViewInteractorDelegate {
             } else if indexes.count > 0 {
                 insertItems(at: indexes)
             }
-            onDemandDelegate?.onDemandCollectionView(self, onContentLoadFinishedWithNewObjects: lastObjects, error: error)
         }
+        onDemandDelegate?.onDemandCollectionView(self, onContentLoadFinishedWithNewObjects: lastObjects, error: error)
     }
     
     func reloadCollectionView() {

@@ -22,6 +22,9 @@ class ISOnDemandCollectionLoadingCell: UICollectionViewCell {
 
     @objc fileprivate func setLoadingActivityView(_ notification: NSNotification) {
         let spin = notification.object as? Bool ?? false
-        spin ? spinner.startAnimating() : spinner.stopAnimating()
+        
+        DispatchQueue.main.async {
+            spin ? self.spinner.startAnimating() : self.spinner.stopAnimating()
+        }
     }
 }

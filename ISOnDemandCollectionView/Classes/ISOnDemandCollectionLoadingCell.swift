@@ -10,21 +10,21 @@ import UIKit
 
 class ISOnDemandCollectionLoadingCell: UICollectionViewCell {
     @IBOutlet var spinner: UIActivityIndicatorView!
+    var animate: Bool = false {
+        didSet {
+            setLoadingActivityView()
+        }
+    }
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        spinner.startAnimating()
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(setLoadingActivityView(_:)), name: NSNotification.Name("setLoadingActivityView:"), object: nil)
-
         // Initialization code
     }
-
-    @objc fileprivate func setLoadingActivityView(_ notification: NSNotification) {
-        let spin = notification.object as? Bool ?? false
-        
+    
+    fileprivate func setLoadingActivityView() {
         DispatchQueue.main.async {
-            spin ? self.spinner.startAnimating() : self.spinner.stopAnimating()
+            self.animate ? self.spinner?.startAnimating() : self.spinner?.stopAnimating()
         }
     }
 }
+

@@ -86,7 +86,7 @@ extension ISOnDemandCollectionView: UICollectionViewDataSource, UICollectionView
         let cellIdentifier = onDemandDelegate?.onDemandCollectionView(collectionView, reuseIdentifierForItemAt: indexPath)
         if indexPath.section == 1 {
             cell = dequeueReusableCell(withReuseIdentifier: "ISOnDemandCollectionLoadingCell", for: indexPath)
-            (cell as! ISOnDemandCollectionLoadingCell).spinner.startAnimating()
+            (cell as? ISOnDemandCollectionLoadingCell)?.animate = interactor?.isFetching ?? false
         } else {
             cell = dequeueReusableCell(withReuseIdentifier: cellIdentifier ?? "ISOnDemandCollectionViewCell", for: indexPath)
         }
@@ -202,6 +202,13 @@ extension ISOnDemandCollectionView: ISOnDemandCollectionViewInteractorDelegate {
         onDemandDelegate?.onDemandCollectionView(self, onContentLoadFinishedWithNewObjects: lastObjects, error: error)
     }
     
+    func setSpinnerCell(to animate: Bool) {
+        DispatchQueue.main.async {
+            let loadingCell = (self.cellForItem(at: IndexPath(item: 0, section: 1)) as? ISOnDemandCollectionLoadingCell)
+            loadingCell?.animate = animate
+        }
+    }
+    
     func reloadCollectionView() {
         self.reloadData()
     }
@@ -228,3 +235,4 @@ extension ISOnDemandCollectionView: ISOnDemandCollectionViewInteractorDelegate {
     @objc optional func onDemandCollectionView(_ collectionView: ISOnDemandCollectionView, collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets
     
 }
+

@@ -11,6 +11,7 @@ import Foundation
 protocol ISOnDemandCollectionViewInteractorDelegate {
     func onObjectsFetched(lastObjects: [Any]?, error: Error?)
     func reloadCollectionView()
+    func setSpinnerCell(to animate: Bool)
 }
 
 open class ISOnDemandCollectionViewInteractor {
@@ -36,7 +37,7 @@ open class ISOnDemandCollectionViewInteractor {
         }
         
         isFetching = true
-        NotificationCenter.default.post(name: Notification.Name(rawValue: "setLoadingActivityView:"), object: true)
+        delegate?.setSpinnerCell(to: true)
         fetchObjects(forPage: currentPage) {
             lastObjects, error in
             let lastObjects = lastObjects ?? []
@@ -52,7 +53,7 @@ open class ISOnDemandCollectionViewInteractor {
             return
         }
         
-        NotificationCenter.default.post(name: Notification.Name(rawValue: "setLoadingActivityView:"), object: true)
+        delegate?.setSpinnerCell(to: true)
         currentPage = 0
         hasMoreItems = true
         isFetching = true
@@ -68,20 +69,21 @@ open class ISOnDemandCollectionViewInteractor {
     }
     
     /**
-     * 
+     *
      Override this method to return the new objects fetched every time a new page is loaded or returns an error
      
-        - Parameter forPage: the page to load the items for
-        - Parameter completion: the function to be called within `ISOnDemandCollectionView` when the user-implemented interactor returns with new items
+     - Parameter forPage: the page to load the items for
+     - Parameter completion: the function to be called within `ISOnDemandCollectionView` when the user-implemented interactor returns with new items
      */
     open func fetchObjects(forPage: Int, completion: @escaping ((_ result: [Any]?, _ error: Error?)->Void)) { }
     
     
     //MARK: Util
     fileprivate func onObjectsLoaded(lastObjectsCount: Int) {
-        NotificationCenter.default.post(name: Notification.Name(rawValue: "setLoadingActivityView:"), object: false)
+        delegate?.setSpinnerCell(to: false)
         isFetching = false
         hasMoreItems = lastObjectsCount >= pagination
         currentPage += 1
     }
 }
+

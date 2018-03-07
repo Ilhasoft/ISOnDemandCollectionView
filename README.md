@@ -9,6 +9,7 @@
 
 To quickly implement, make your UICollectionView a subclass of ISOnDemandCollectionView:
 
+![](https://github.com/Ilhasoft/ISOnDemandCollectionView/raw/master/ISOnDemandCollectionView/Resources/implement.png)
 
 In your ViewController, implement the `ISOnDemandCollectionViewDelegate` protocol. You're required to implement:
 
@@ -60,6 +61,22 @@ In your `viewDidLoad` method, setup:
         collectionView.interactor = ExampleInteractor()
         collectionView.loadContent()
     }
+```
+
+# Install
+
+## Cocoapods
+
+On your Podfile:
+
+```
+platform :ios, '9.0'
+
+target 'YourTarget' do
+    use_frameworks!
+    pod 'ISOnDemandCollectionView', :git => 'https://github.com/Ilhasoft/ISOnDemandCollectionView.git'
+end
+
 ```
 
 # Using ISOnDemandCollectionView with Parse

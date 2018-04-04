@@ -194,10 +194,11 @@ extension ISOnDemandCollectionView: ISOnDemandCollectionViewInteractorDelegate {
             
             if firstLoad {
                 firstLoad = false
-                reloadCollectionView()
-            } else if indexes.count > 0 {
-                insertItems(at: indexes)
             }
+            reloadCollectionView()
+//            } else if indexes.count > 0 {
+//                insertItems(at: indexes)
+//            }
         }
         onDemandDelegate?.onDemandCollectionView(self, onContentLoadFinishedWithNewObjects: lastObjects, error: error)
     }

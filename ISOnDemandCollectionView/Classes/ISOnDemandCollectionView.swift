@@ -121,7 +121,7 @@ extension ISOnDemandCollectionView: UICollectionViewDataSource, UICollectionView
         var size: CGSize! = onDemandDelegate?.onDemandCollectionView?(self, sizeForItemAt: indexPath)
         if size == nil {
             if #available(iOS 10.0, *) {
-                size = UICollectionViewFlowLayoutAutomaticSize
+                size = UICollectionViewFlowLayout.automaticSize
             } else {
                 size = CGSize(width: 50, height: 50)
             }
@@ -135,7 +135,7 @@ extension ISOnDemandCollectionView: UICollectionViewDataSource, UICollectionView
     }
     
     public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        let inset = onDemandDelegate?.onDemandCollectionView?(self, collectionViewLayout: collectionViewLayout, insetForSectionAt: section) ?? UIEdgeInsetsMake(0, 0, 0, 0)
+        let inset = onDemandDelegate?.onDemandCollectionView?(self, collectionViewLayout: collectionViewLayout, insetForSectionAt: section) ?? UIEdgeInsets.init(top: 0, left: 0, bottom: 0, right: 0)
         return inset
     }
     
